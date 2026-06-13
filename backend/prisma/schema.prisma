@@ -1,0 +1,149 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  password  String
+  role      String   @default("user") // user | admin
+  createdAt DateTime @default(now())
+  bookings  Booking[]
+}
+
+model Station {
+  id        String @id @default(uuid())
+  code      String @unique
+  name      String
+  city      String
+  state     String
+  latitude  Float?
+  longitude Float?
+  trainRoutes TrainRoute[]
+  foodVendors FoodVendor[]
+}
+
+model Train {
+  id          String   @id @default(uuid())
+  trainNumber String   @unique
+  name        String
+  type        String   // Local | Express | Rajdhani | Shatabdi | Duronto | Superfast
+  fromStation String
+  toStation   String
+  totalSeats  Int      @default(500)
+  isActive    Boolean  @default(true)
+  routes      TrainRoute[]
+  bookings    Booking[]
+  delays      Delay[]
+}
+
+model TrainRoute {
+  id             String  @id @default(uuid())
+  trainId        String
+  stationId      String
+  stopNumber     Int
+  arrivalTime    String? // "HH:MM" format
+  departureTime  String? // "HH:MM" format
+  distanceFromOrigin Int  @default(0)
+  platform       String  @default("1")
+  haltMinutes    Int     @default(2)
+  train          Train   @relation(fields: [trainId], references: [id])
+  station        Station @relation(fields: [stationId], references: [id])
+
+  @@unique([trainId, stationId])
+  @@unique([trainId, stopNumber])
+}
+
+model Booking {
+  id           String   @id @default(uuid())
+  pnr          String   @unique
+  userId       String
+  trainId      String
+  journeyDate  String   // "YYYY-MM-DD"
+  fromStation  String
+  toStation    String
+  seatClass    String   // Sleeper | 3AC | 2AC | 1AC | General
+  totalPassengers Int
+  totalFare    Float
+  status       String   @default("Confirmed") // Confirmed | Cancelled | WaitingList
+  paymentStatus String  @default("Paid")
+  coachNumber  String?
+  seatNumbers  String?  // JSON array as string
+  waitlistNumber Int?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  train        Train    @relation(fields: [trainId], references: [id])
+  passengers   Passenger[]
+  foodOrders   FoodOrder[]
+}
+
+model Passenger {
+  id         String  @id @default(uuid())
+  bookingId  String
+  name       String
+  age        Int
+  gender     String  // Male | Female | Other
+  seatNumber String?
+  booking    Booking @relation(fields: [bookingId], references: [id])
+}
+
+model Delay {
+  id          String   @id @default(uuid())
+  trainId     String
+  date        String   // "YYYY-MM-DD"
+  delayMinutes Int     @default(0)
+  reason      String?
+  updatedAt   DateTime @default(now()) @updatedAt
+  train       Train    @relation(fields: [trainId], references: [id])
+
+  @@unique([trainId, date])
+}
+
+model FoodVendor {
+  id        String @id @default(uuid())
+  name      String
+  stationId String
+  cuisine   String
+  rating    Float  @default(4.0)
+  imageUrl  String?
+  isOpen    Boolean @default(true)
+  station   Station @relation(fields: [stationId], references: [id])
+  menuItems FoodItem[]
+  orders    FoodOrder[]
+}
+
+model FoodItem {
+  id         String  @id @default(uuid())
+  vendorId   String
+  name       String
+  description String?
+  price      Float
+  category   String  // Breakfast | Lunch | Dinner | Snacks | Beverages | Desserts
+  isVeg      Boolean @default(true)
+  imageUrl   String?
+  isAvailable Boolean @default(true)
+  vendor     FoodVendor @relation(fields: [vendorId], references: [id])
+}
+
+model FoodOrder {
+  id          String   @id @default(uuid())
+  bookingId   String
+  vendorId    String
+  items       String   // JSON array
+  totalAmount Float
+  status      String   @default("Placed") // Placed | Preparing | OutForDelivery | Delivered | Cancelled
+  coachSeat   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  vendor      FoodVendor @relation(fields: [vendorId], references: [id])
+}

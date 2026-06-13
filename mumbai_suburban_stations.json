@@ -1,0 +1,926 @@
+[
+  {
+    "name": "Airoli",
+    "code": "AIRL",
+    "lines": "Trans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Aman Lodge",
+    "code": "AMNL",
+    "lines": "Matheran Hill Railway",
+    "district": "Raigad"
+  },
+  {
+    "name": "Ambarnath",
+    "code": "ABH",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Ambivli",
+    "code": "ABY",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Andheri",
+    "code": "ADH",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Apta",
+    "code": "APTA",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Asangaon",
+    "code": "ASO",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Atgaon",
+    "code": "ATG",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Badlapur",
+    "code": "BUD",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Bamandongri",
+    "code": "BMNP",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Bandra",
+    "code": "BA",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Bandra Terminus",
+    "code": "BDTS",
+    "lines": "Western line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Bhandup",
+    "code": "BND",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Bhayandar",
+    "code": "BYR",
+    "lines": "Western line",
+    "district": "Thane"
+  },
+  {
+    "name": "Bhivpuri Road",
+    "code": "BIPR",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Bhiwandi Road",
+    "code": "BIRD",
+    "lines": "Vasai Road–Roha line",
+    "district": ""
+  },
+  {
+    "name": "Boisar",
+    "code": "BOR",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Bordi Road",
+    "code": "BRRD",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Borivali",
+    "code": "BVI",
+    "lines": "Western line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Byculla",
+    "code": "BY",
+    "lines": "Central line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "CBD Belapur",
+    "code": "BEPR",
+    "lines": "Harbour linePort line",
+    "district": "Thane"
+  },
+  {
+    "name": "Charni Road",
+    "code": "CYR",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Chembur",
+    "code": "CMBR",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Chhatrapati Shivaji Maharaj Terminus",
+    "code": "CSTM",
+    "lines": "Central lineHarbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Chikhale",
+    "code": "CKHS",
+    "lines": "Panvel-Karjat Railway Corridor",
+    "district": "Raigad"
+  },
+  {
+    "name": "Chikhloli",
+    "code": "CKLI",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Chinchpokli",
+    "code": "CHG",
+    "lines": "Central line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Chouk",
+    "code": "CHOK",
+    "lines": "Panvel-Karjat Railway Corridor",
+    "district": "Raigad"
+  },
+  {
+    "name": "Chunabhatti",
+    "code": "CHF",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Churchgate",
+    "code": "CCG",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Cotton Green",
+    "code": "CTGN",
+    "lines": "Harbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Currey Road",
+    "code": "CRD",
+    "lines": "Central line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Dadar",
+    "code": "DR",
+    "lines": "Central lineWestern line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Dahanu Road",
+    "code": "DRD",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Dahisar",
+    "code": "DIC",
+    "lines": "Western line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Dativali",
+    "code": "DTVL",
+    "lines": "Vasai Road–Roha line",
+    "district": "Thane"
+  },
+  {
+    "name": "Digha Gaon",
+    "code": "DIGH",
+    "lines": "Trans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Diva Junction",
+    "code": "DIVA",
+    "lines": "Central lineVasai Road–Roha line",
+    "district": "Thane"
+  },
+  {
+    "name": "Dockyard Road",
+    "code": "DKRD",
+    "lines": "Harbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Dolavli",
+    "code": "DLV",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Dombivli",
+    "code": "DI",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Dronagiri",
+    "code": "DRNG",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Gavan",
+    "code": "GAVN",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Ghansoli",
+    "code": "GNSL",
+    "lines": "Trans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Ghatkopar",
+    "code": "GC",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Gholwad",
+    "code": "GVD",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Goregaon",
+    "code": "GMN",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Govandi",
+    "code": "GV",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Grant Road",
+    "code": "GTR",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Guru Tegh Bahadur Nagar",
+    "code": "GTBN",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Hamrapur",
+    "code": "HMRR",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Jite",
+    "code": "JITE",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Jogeshwari",
+    "code": "JOS",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Juchandra",
+    "code": "JCNR",
+    "lines": "Vasai Road–Roha line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Juinagar",
+    "code": "JNJ",
+    "lines": "Harbour lineTrans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Jummapatti",
+    "code": "JMPI",
+    "lines": "Matheran Hill Railway",
+    "district": "Raigad"
+  },
+  {
+    "name": "Kalamboli",
+    "code": "KLMG",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Kalwa",
+    "code": "KLVA",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Kalyan Junction",
+    "code": "KYN",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Kaman Road",
+    "code": "KAV",
+    "lines": "Vasai Road–Roha line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Kandivli",
+    "code": "KILE",
+    "lines": "Western line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Kanjur Marg",
+    "code": "KJMG",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Karjat",
+    "code": "KJT",
+    "lines": "Central linePanvel-Karjat Railway Corridor",
+    "district": "Raigad"
+  },
+  {
+    "name": "Kasara",
+    "code": "KSRA",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Kasu",
+    "code": "KASU",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Kelavli",
+    "code": "KVL",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Kelve Road",
+    "code": "KLV",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Khadavli",
+    "code": "KDV",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Khandeshwar",
+    "code": "KNDS",
+    "lines": "Harbour line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Khar Road",
+    "code": "KHAR",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Kharbav",
+    "code": "KHBV",
+    "lines": "Vasai Road–Roha line",
+    "district": "Thane"
+  },
+  {
+    "name": "Khardi",
+    "code": "KARD",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Kharghar",
+    "code": "KHAG",
+    "lines": "Harbour line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Kharkopar",
+    "code": "KARP",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Khopoli",
+    "code": "KHPI",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "King's Circle",
+    "code": "KCE",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Kopar",
+    "code": "KOPR",
+    "lines": "Central lineVasai Road–Roha line",
+    "district": "Thane"
+  },
+  {
+    "name": "Koparkhairane",
+    "code": "KPHN",
+    "lines": "Trans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Kurla",
+    "code": "CLA",
+    "lines": "Central lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Lokmanya Tilak Terminus",
+    "code": "LTT",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Lower Parel",
+    "code": "PL",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Lowjee",
+    "code": "LWJ",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Mahalaxmi",
+    "code": "MX",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Mahim Junction",
+    "code": "MM",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Malad",
+    "code": "MDD",
+    "lines": "Western line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Mankhurd",
+    "code": "MNKD",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Mansarovar",
+    "code": "MANR",
+    "lines": "Harbour line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Marine Lines",
+    "code": "MEL",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Masjid",
+    "code": "MSD",
+    "lines": "Central lineHarbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Matheran",
+    "code": "MHN",
+    "lines": "Matheran Hill Railway",
+    "district": "Raigad"
+  },
+  {
+    "name": "Matunga",
+    "code": "MTN",
+    "lines": "Central line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Matunga Road",
+    "code": "MRU",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Mira Road",
+    "code": "MIRA",
+    "lines": "Western line",
+    "district": "Thane"
+  },
+  {
+    "name": "Mulund",
+    "code": "MLND",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Mumbai Central",
+    "code": "MMCT",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Mumbra",
+    "code": "MBQ",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Nagothane",
+    "code": "NNG",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Nahur",
+    "code": "NHU",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Naigaon",
+    "code": "NIG",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Nallasopara",
+    "code": "NSP",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Navde Road",
+    "code": "NVRD",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Neral Junction",
+    "code": "NRL",
+    "lines": "Central lineMatheran Hill Railway",
+    "district": "Raigad"
+  },
+  {
+    "name": "Nerul",
+    "code": "NEU",
+    "lines": "Harbour lineTrans-Harbour linePort line",
+    "district": "Thane"
+  },
+  {
+    "name": "Nhava Sheva",
+    "code": "NWSH",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Nidi",
+    "code": "NIDI",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Nilaje",
+    "code": "NIIJ",
+    "lines": "Vasai Road–Roha line",
+    "district": "Thane"
+  },
+  {
+    "name": "Palasdhari",
+    "code": "PDI",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Palghar",
+    "code": "PLG",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Panvel",
+    "code": "PNVL",
+    "lines": "Harbour lineVasai Road–Roha linePanvel-Karjat Railway Corridor Panvel–Karjat–Pune line Mumbai–Chennai line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Parel",
+    "code": "PR",
+    "lines": "Central line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Pen",
+    "code": "PEN",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Poyanje",
+    "code": "PYJE",
+    "lines": "Panvel-Karjat Railway Corridor",
+    "district": "Raigad"
+  },
+  {
+    "name": "Prabhadevi",
+    "code": "PBHD",
+    "lines": "Western line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Rabale",
+    "code": "RABE",
+    "lines": "Trans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Ram Mandir",
+    "code": "RMAR",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Rasayani",
+    "code": "RSYI",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Reay Road",
+    "code": "RRD",
+    "lines": "Harbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Roha",
+    "code": "ROHA",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Sandhurst Road",
+    "code": "SNRD",
+    "lines": "Central lineHarbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Sanpada",
+    "code": "SNCR",
+    "lines": "Harbour lineTrans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Santacruz",
+    "code": "STC",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Saphale",
+    "code": "SAH",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Seawoods-Darave-Karave",
+    "code": "SWDV",
+    "lines": "Harbour linePort line",
+    "district": "Thane"
+  },
+  {
+    "name": "Sewri",
+    "code": "SVE",
+    "lines": "Harbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Shahad",
+    "code": "SHAD",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Shelu",
+    "code": "SHLU",
+    "lines": "Central line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Shematikhar",
+    "code": "SEMK",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Sion",
+    "code": "SIN",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Somatne",
+    "code": "SMNE",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Taloje Panchnand",
+    "code": "TPND",
+    "lines": "Vasai Road–Roha line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Targhar",
+    "code": "TRGR",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Thakurli",
+    "code": "THK",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Thane",
+    "code": "TNA",
+    "lines": "Central lineTrans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Thansit",
+    "code": "THS",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Tilak Nagar",
+    "code": "TKNG",
+    "lines": "Harbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Titwala",
+    "code": "TLA",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Turbhe",
+    "code": "TRB",
+    "lines": "Trans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Ulhasnagar",
+    "code": "ULNR",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Umbermali",
+    "code": "OMB",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Umroli",
+    "code": "UOI",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Uran",
+    "code": "URAN",
+    "lines": "Port line",
+    "district": "Raigad"
+  },
+  {
+    "name": "Vaitarna",
+    "code": "VTN",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Vangani",
+    "code": "VGI",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Vangaon",
+    "code": "VGN",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Vasai Road",
+    "code": "BSR",
+    "lines": "Western lineVasai Road–Roha line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Vashi",
+    "code": "VSH",
+    "lines": "Harbour lineTrans-Harbour line",
+    "district": "Thane"
+  },
+  {
+    "name": "Vasind",
+    "code": "VSD",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Vidyavihar",
+    "code": "VVH",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Vikhroli",
+    "code": "VK",
+    "lines": "Central line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Vile Parle",
+    "code": "VLP",
+    "lines": "Western lineHarbour line",
+    "district": "Mumbai Suburban"
+  },
+  {
+    "name": "Virar",
+    "code": "VR",
+    "lines": "Western line",
+    "district": "Palghar"
+  },
+  {
+    "name": "Vithalwadi",
+    "code": "VLDI",
+    "lines": "Central line",
+    "district": "Thane"
+  },
+  {
+    "name": "Wadala Road",
+    "code": "VDLR",
+    "lines": "Harbour line",
+    "district": "Mumbai City"
+  },
+  {
+    "name": "Water Pipe",
+    "code": "WPI",
+    "lines": "Matheran Hill Railway",
+    "district": "Raigad"
+  }
+]

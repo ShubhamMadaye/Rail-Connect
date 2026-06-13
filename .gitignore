@@ -1,0 +1,74 @@
+# ========================
+# Node / npm
+# ========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ========================
+# Next.js (Frontend)
+# ========================
+.next/
+out/
+build/
+dist/
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# ========================
+# Prisma
+# ========================
+# Keep schema but ignore generated client and SQLite DB
+backend/prisma/railway.db
+backend/prisma/railway.db-journal
+
+# ========================
+# TypeScript
+# ========================
+*.tsbuildinfo
+next-env.d.ts
+
+# ========================
+# OS & Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ========================
+# Logs
+# ========================
+logs/
+*.log
+
+# ========================
+# IDE / AI Tools
+# ========================
+.antigravity/
+.antigravity-ide/
+.gemini/
+.claude/
+.codex/
+.copilot/
+
+# ========================
+# Misc
+# ========================
+.cache/
+coverage/
+*.pem
