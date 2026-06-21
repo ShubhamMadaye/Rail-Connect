@@ -32,6 +32,26 @@ function addMinutesToTime(timeStr: string, minutes: number): string {
   return `${String(hrs).padStart(2, '0')}:${String(mns).padStart(2, '0')}`;
 }
 
+function formatTo12Hr(timeStr: string | null | undefined): string {
+  if (!timeStr || timeStr === '—') return '—';
+  if (timeStr.toLowerCase().includes('am') || timeStr.toLowerCase().includes('pm')) {
+    return timeStr;
+  }
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return timeStr;
+  
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return timeStr;
+  
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  
+  const hoursStr = hours.toString().padStart(2, '0');
+  return `${hoursStr}:${minutes} ${ampm}`;
+}
+
 function SearchTrainCard({ train, selectedClass, idx }: { train: any; selectedClass: string; idx: number }) {
   const [prediction, setPrediction] = useState<any>(null);
   const [loadingPred, setLoadingPred] = useState(true);
@@ -87,7 +107,7 @@ function SearchTrainCard({ train, selectedClass, idx }: { train: any; selectedCl
             {/* Route timeline */}
             <div className="flex items-center justify-between gap-3 min-w-0">
               <div className="min-w-0 flex-1">
-                <div className="text-2xl font-extrabold text-white leading-none">{train.departure || '—'}</div>
+                <div className="text-2xl font-extrabold text-white leading-none">{formatTo12Hr(train.departure)}</div>
                 <div className="text-xs text-slate-400 flex items-center gap-1 mt-1 truncate" title={train.fromStation.name}>
                   <MapPin className="w-3 h-3 text-indigo-400 shrink-0" />
                   <span className="truncate">{train.fromStation.name}</span>
@@ -106,7 +126,7 @@ function SearchTrainCard({ train, selectedClass, idx }: { train: any; selectedCl
               </div>
 
               <div className="text-right min-w-0 flex-1">
-                <div className="text-2xl font-extrabold text-white leading-none">{train.arrival || '—'}</div>
+                <div className="text-2xl font-extrabold text-white leading-none">{formatTo12Hr(train.arrival)}</div>
                 <div className="text-xs text-slate-400 flex items-center gap-1 mt-1 justify-end truncate" title={train.toStation.name}>
                   <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
                   <span className="truncate">{train.toStation.name}</span>
@@ -282,12 +302,12 @@ function SearchTrainCard({ train, selectedClass, idx }: { train: any; selectedCl
                     <div className="text-right flex items-center gap-4 text-[10px] sm:text-xs shrink-0">
                       <div className="text-right">
                         <span className="text-slate-600 font-bold uppercase text-[8px] tracking-wider block">Scheduled</span>
-                        <span className="text-slate-400 font-bold font-mono">{timeToShow}</span>
+                        <span className="text-slate-400 font-bold font-mono">{formatTo12Hr(timeToShow)}</span>
                       </div>
                       {train.delayMinutes > 0 && timeToShow !== '—' && (
                         <div className="text-right">
                           <span className="text-amber-500/80 font-bold uppercase text-[8px] tracking-wider block">Expected</span>
-                          <span className="text-amber-400 font-bold font-mono">{estTime}</span>
+                          <span className="text-amber-400 font-bold font-mono">{formatTo12Hr(estTime)}</span>
                         </div>
                       )}
                     </div>

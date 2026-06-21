@@ -61,7 +61,7 @@ export const bookingsAPI = {
 
 // ────── Timetable ──────
 export const timetableAPI = {
-  getAll: () => api.get('/timetable'),
+  getAll: (date?: string) => api.get('/timetable', { params: { date } }),
   getDelays: () => api.get('/timetable/delays'),
 };
 

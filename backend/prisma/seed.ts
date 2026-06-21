@@ -201,8 +201,50 @@ async function main() {
     { id: 'st-vdlr', code: 'VDLR', name: 'Wadala Road', city: 'Mumbai', state: 'Maharashtra' },
     { id: 'st-wpi', code: 'WPI', name: 'Water Pipe', city: 'Raigad', state: 'Maharashtra' },
   ];
-  await prisma.station.createMany({ data: stations });
-  console.log('[SUCCESS] Stations seeded');
+  const coordMap: Record<string, { lat: number; lng: number }> = {
+    NDLS: { lat: 28.6143, lng: 77.2198 },
+    MAS: { lat: 13.0827, lng: 80.2707 },
+    HWH: { lat: 22.5851, lng: 88.3378 },
+    SBC: { lat: 12.9784, lng: 77.5694 },
+    PUNE: { lat: 18.5308, lng: 73.8741 },
+    ADI: { lat: 23.0270, lng: 72.6012 },
+    JP: { lat: 26.9200, lng: 75.7865 },
+    HYB: { lat: 17.3916, lng: 78.4719 },
+    BPL: { lat: 23.2625, lng: 77.4143 },
+    PNBE: { lat: 25.6022, lng: 85.1200 },
+    LKO: { lat: 26.8317, lng: 80.9220 },
+    CSTM: { lat: 18.9400, lng: 72.8353 },
+    CCG: { lat: 18.9322, lng: 72.8264 },
+    BY: { lat: 18.9744, lng: 72.8339 },
+    DR: { lat: 19.0178, lng: 72.8431 },
+    CLA: { lat: 19.0652, lng: 72.8793 },
+    GC: { lat: 19.0864, lng: 72.9080 },
+    TNA: { lat: 19.1860, lng: 72.9757 },
+    DI: { lat: 19.2184, lng: 73.0867 },
+    KYN: { lat: 19.2354, lng: 73.1299 },
+    PNVL: { lat: 18.9894, lng: 73.1175 },
+    VSH: { lat: 19.0644, lng: 72.9975 },
+    MMCT: { lat: 18.9696, lng: 72.8194 },
+    BA: { lat: 19.0544, lng: 72.8406 },
+    ADH: { lat: 19.1197, lng: 72.8468 },
+    BVI: { lat: 19.2290, lng: 72.8573 },
+    BYR: { lat: 19.2941, lng: 72.8550 },
+    BSR: { lat: 19.3824, lng: 72.8317 },
+    VR: { lat: 19.4674, lng: 72.7989 }
+  };
+
+  const stationsWithCoords = stations.map(s => {
+    const coords = coordMap[s.code.toUpperCase()];
+    return {
+      ...s,
+      latitude: coords ? coords.lat : null,
+      longitude: coords ? coords.lng : null
+    };
+  });
+
+  await prisma.station.createMany({ data: stationsWithCoords });
+  console.log('[SUCCESS] Stations seeded with coordinates');
+
 
   // --- TRAINS --------------------------------------------------------------
   const trains = [

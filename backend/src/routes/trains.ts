@@ -8,17 +8,25 @@ const prisma = new PrismaClient();
 // GET /api/trains/live/:trainNumber
 router.get('/live/:trainNumber', async (req: Request, res: Response) => {
   const trainNumber = req.params.trainNumber as string;
-  const date = new Date().toISOString().split('T')[0];
+  const now = new Date();
 
   try {
-    const train = await prisma.train.findUnique({ where: { trainNumber } });
-    if (!train) return res.status(404).json({ error: 'Train not found' });
+    let queryTrainNumber = trainNumber;
+    let startMinsOverride: number | null = null;
 
-    // Fetch delay records for today
-    const dbDelays = await prisma.delay.findMany({
-      where: { trainId: train.id, date }
-    });
-    const dbDelay = dbDelays[0];
+    if (trainNumber.includes('-')) {
+      const parts = trainNumber.split('-');
+      queryTrainNumber = parts[0];
+      const timeStr = parts[1];
+      if (timeStr && timeStr.length === 4) {
+        const hh = parseInt(timeStr.slice(0, 2), 10);
+        const mm = parseInt(timeStr.slice(2, 4), 10);
+        startMinsOverride = hh * 60 + mm;
+      }
+    }
+
+    const train = await prisma.train.findUnique({ where: { trainNumber: queryTrainNumber } });
+    if (!train) return res.status(404).json({ error: 'Train not found' });
 
     // Get all sequential routes for the train
     const routes = await prisma.trainRoute.findMany({
@@ -31,44 +39,294 @@ router.get('/live/:trainNumber', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Train schedule route is not defined' });
     }
 
-    // Dynamic running progress simulation based on current system minute
-    const now = new Date();
-    const totalStops = routes.length;
-    // Map current minute block to simulate train progressing between nodes
-    const progressSeed = (now.getHours() * 60 + now.getMinutes()) % 60; // 0 to 59 minutes
-    const currentIndex = Math.min(totalStops - 1, Math.floor((progressSeed / 60) * totalStops));
-    const nextIndex = Math.min(totalStops - 1, currentIndex + 1);
-    const minutesToNext = Math.max(1, 10 - (progressSeed % 10)); // simulated countdown to next stop
+    // Helper functions for time conversion
+    const parseTimeToMinutes = (timeStr: string | null): number => {
+      if (!timeStr) return 0;
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    };
 
-    const statusStr = dbDelay && dbDelay.delayMinutes > 0 
-      ? `Delayed by ${dbDelay.delayMinutes}m : ${dbDelay.reason || 'Traffic Congestion'}` 
-      : 'On Time';
+    const minutesToTimeStr = (totalMins: number): string => {
+      const h = Math.floor((totalMins % 1440) / 60);
+      const m = totalMins % 60;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    };
+
+    // Process scheduled times to absolute minutes from starting day midnight,
+    // accounting for overnight runs that roll over midnight.
+    let currentOffset = 0;
+    let lastMinutes = 0;
+    let processedRoutes = routes.map((r, idx) => {
+      const arrTimeMin = r.arrivalTime ? parseTimeToMinutes(r.arrivalTime) : null;
+      const depTimeMin = r.departureTime ? parseTimeToMinutes(r.departureTime) : null;
+
+      let arrMinAbs = arrTimeMin;
+      if (arrMinAbs !== null) {
+        if (arrMinAbs < lastMinutes) {
+          currentOffset += 1440; // Midnight rollover
+        }
+        arrMinAbs += currentOffset;
+        lastMinutes = arrMinAbs;
+      }
+
+      let depMinAbs = depTimeMin;
+      if (depMinAbs !== null) {
+        if (depMinAbs < lastMinutes) {
+          currentOffset += 1440; // Midnight rollover
+        }
+        depMinAbs += currentOffset;
+        lastMinutes = depMinAbs;
+      }
+
+      return {
+        route: r,
+        arrMinAbs: arrMinAbs ?? depMinAbs ?? 0,
+        depMinAbs: depMinAbs ?? arrMinAbs ?? 0,
+        arrivalTime: r.arrivalTime,
+        departureTime: r.departureTime
+      };
+    });
+
+    if (startMinsOverride !== null && processedRoutes.length > 0) {
+      const templateStartMins = processedRoutes[0].depMinAbs;
+      const shiftMins = startMinsOverride - templateStartMins;
+
+      processedRoutes = processedRoutes.map(pr => {
+        const arrMinAbs = pr.arrMinAbs !== null ? pr.arrMinAbs + shiftMins : null;
+        const depMinAbs = pr.depMinAbs !== null ? pr.depMinAbs + shiftMins : null;
+        
+        const arrivalTime = pr.arrivalTime ? minutesToTimeStr(parseTimeToMinutes(pr.arrivalTime) + shiftMins) : null;
+        const departureTime = pr.departureTime ? minutesToTimeStr(parseTimeToMinutes(pr.departureTime) + shiftMins) : null;
+
+        return {
+          ...pr,
+          arrMinAbs: arrMinAbs ?? depMinAbs ?? 0,
+          depMinAbs: depMinAbs ?? arrMinAbs ?? 0,
+          arrivalTime,
+          departureTime
+        };
+      });
+    }
+
+    // Fetch delay records for today and yesterday to handle active overnight runs
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterdayMidnight = new Date(todayMidnight);
+    yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 1);
+
+    const todayStr = now.toISOString().split('T')[0];
+    const yesterdayStr = yesterdayMidnight.toISOString().split('T')[0];
+
+    const delays = await prisma.delay.findMany({
+      where: {
+        trainId: train.id,
+        date: { in: [todayStr, yesterdayStr] }
+      }
+    });
+
+    const getDelayForDate = (dateStr: string) => {
+      return delays.find(d => d.date === dateStr) || null;
+    };
+
+    const firstStopDep = processedRoutes[0].depMinAbs;
+    const lastStopArr = processedRoutes[processedRoutes.length - 1].arrMinAbs;
+
+    // Evaluate trip states for both yesterday's and today's runs
+    const getJourneyStatus = (startDate: Date, dateStr: string) => {
+      const dateDelay = getDelayForDate(dateStr);
+      const dMins = dateDelay ? dateDelay.delayMinutes : 0;
+      
+      const startMs = startDate.getTime() + firstStopDep * 60 * 1000;
+      const endMs = startDate.getTime() + (lastStopArr + dMins) * 60 * 1000;
+      const nowMs = now.getTime();
+
+      let journeyState: 'UPCOMING' | 'ACTIVE' | 'COMPLETED' = 'ACTIVE';
+      if (nowMs < startMs) {
+        journeyState = 'UPCOMING';
+      } else if (nowMs > endMs) {
+        journeyState = 'COMPLETED';
+      }
+
+      return {
+        journeyState,
+        startMs,
+        endMs,
+        delayMins: dMins,
+        delayReason: dateDelay ? dateDelay.reason : null,
+        timeFromStartMin: (nowMs - startDate.getTime()) / (60 * 1000)
+      };
+    };
+
+    let selectedRun = getJourneyStatus(todayMidnight, todayStr);
+    let selectedStartDate = todayMidnight;
+    let selectedDateStr = todayStr;
+
+    const yesterdayRun = getJourneyStatus(yesterdayMidnight, yesterdayStr);
+    if (yesterdayRun.journeyState === 'ACTIVE') {
+      selectedRun = yesterdayRun;
+      selectedStartDate = yesterdayMidnight;
+      selectedDateStr = yesterdayStr;
+    }
+
+    const { journeyState, timeFromStartMin, delayMins, delayReason } = selectedRun;
+    const totalStops = processedRoutes.length;
+
+    let currentIndex = 0;
+    let nextIndex = 0;
+    let minutesToNext = 0;
+    let statusText = '';
+    let haltedAtIdx: number | null = null;
+
+    if (journeyState === 'UPCOMING') {
+      currentIndex = 0;
+      nextIndex = 0;
+      const originRoute = processedRoutes[0];
+      const startMs = selectedStartDate.getTime() + originRoute.depMinAbs * 60 * 1000;
+      minutesToNext = Math.ceil((startMs - now.getTime()) / (60 * 1000));
+      
+      statusText = `Scheduled to depart from ${originRoute.route.station.name} at ${originRoute.route.departureTime}.`;
+      if (delayMins > 0) {
+        statusText += ` Expected departure delayed to ${minutesToTimeStr(originRoute.depMinAbs + delayMins)} (${delayMins}m delay).`;
+      } else {
+        statusText += ` On Time.`;
+      }
+    } else if (journeyState === 'COMPLETED') {
+      currentIndex = totalStops - 1;
+      nextIndex = totalStops - 1;
+      minutesToNext = 0;
+      const destRoute = processedRoutes[totalStops - 1];
+      statusText = `Completed journey. Arrived at ${destRoute.route.station.name} at ${minutesToTimeStr(destRoute.arrMinAbs + delayMins)}.`;
+    } else {
+      // ACTIVE state
+      let found = false;
+
+      for (let i = 0; i < totalStops; i++) {
+        const routeStop = processedRoutes[i];
+        const expectedArr = routeStop.arrMinAbs + delayMins;
+        const expectedDep = routeStop.depMinAbs + delayMins;
+
+        const isFirst = i === 0;
+        const isLast = i === totalStops - 1;
+
+        if (isFirst) {
+          if (timeFromStartMin < expectedDep) {
+            currentIndex = 0;
+            nextIndex = 1;
+            haltedAtIdx = 0;
+            minutesToNext = Math.ceil(expectedDep - timeFromStartMin);
+            statusText = `Halted at ${routeStop.route.station.name} (Origin). Expected departure in ${minutesToNext} mins.`;
+            found = true;
+            break;
+          }
+        } else if (isLast) {
+          if (timeFromStartMin >= expectedArr) {
+            currentIndex = totalStops - 1;
+            nextIndex = totalStops - 1;
+            haltedAtIdx = totalStops - 1;
+            minutesToNext = 0;
+            statusText = `Arrived at ${routeStop.route.station.name} (Destination).`;
+            found = true;
+            break;
+          }
+        } else {
+          if (timeFromStartMin >= expectedArr && timeFromStartMin < expectedDep) {
+            currentIndex = i;
+            nextIndex = Math.min(totalStops - 1, i + 1);
+            haltedAtIdx = i;
+            minutesToNext = Math.ceil(expectedDep - timeFromStartMin);
+            const haltDuration = routeStop.route.haltMinutes;
+            statusText = `Halted at ${routeStop.route.station.name} (Platform ${routeStop.route.platform}). Expected departure in ${minutesToNext} mins.`;
+            found = true;
+            break;
+          }
+        }
+
+        if (i < totalStops - 1) {
+          const nextStop = processedRoutes[i + 1];
+          const currentExpectedDep = expectedDep;
+          const nextExpectedArr = nextStop.arrMinAbs + delayMins;
+
+          if (timeFromStartMin >= currentExpectedDep && timeFromStartMin < nextExpectedArr) {
+            currentIndex = i;
+            nextIndex = i + 1;
+            minutesToNext = Math.ceil(nextExpectedArr - timeFromStartMin);
+            statusText = `Running between ${routeStop.route.station.name} and ${nextStop.route.station.name}. Arriving at ${nextStop.route.station.name} in ${minutesToNext} mins.`;
+            found = true;
+            break;
+          }
+        }
+      }
+
+      if (!found) {
+        currentIndex = 0;
+        nextIndex = 1;
+        minutesToNext = 5;
+        statusText = `Train is active on route.`;
+      }
+    }
+
+    const finalStations = processedRoutes.map((pr, idx) => {
+      let isHalted = haltedAtIdx === idx;
+      let isPassed = false;
+      let isUpcoming = false;
+
+      if (journeyState === 'UPCOMING') {
+        isUpcoming = true;
+      } else if (journeyState === 'COMPLETED') {
+        isPassed = idx < totalStops - 1;
+        isHalted = idx === totalStops - 1;
+      } else {
+        if (idx < currentIndex) {
+          isPassed = true;
+        } else if (idx === currentIndex) {
+          if (haltedAtIdx !== null) {
+            isHalted = true;
+          } else {
+            isPassed = true;
+          }
+        } else {
+          isUpcoming = true;
+        }
+      }
+
+      const expectedArr = pr.arrivalTime ? minutesToTimeStr(pr.arrMinAbs + delayMins) : null;
+      const expectedDep = pr.departureTime ? minutesToTimeStr(pr.depMinAbs + delayMins) : null;
+
+      return {
+        stationName: pr.route.station.name,
+        stationCode: pr.route.station.code,
+        arrivalTime: pr.arrivalTime,
+        departureTime: pr.departureTime,
+        expectedArrivalTime: expectedArr,
+        expectedDepartureTime: expectedDep,
+        distanceKm: pr.route.distanceFromOrigin,
+        platform: pr.route.platform,
+        latitude: pr.route.station.latitude,
+        longitude: pr.route.station.longitude,
+        isHalted,
+        isPassed,
+        isUpcoming
+      };
+    });
 
     res.json({
-      source: 'DATABASE_TRACKING_ENGINE',
+      source: 'SCHEDULE_AWARE_TRACKING_ENGINE',
       trainId: train.id,
-      trainNumber: train.trainNumber,
+      trainNumber: trainNumber,
       trainName: train.name,
-      delayMinutes: dbDelay ? dbDelay.delayMinutes : 0,
-      status: statusStr,
+      type: train.type,
+      delayMinutes: delayMins,
+      delayReason: delayReason || 'Traffic Congestion',
+      status: statusText,
+      journeyState,
+      journeyDate: selectedDateStr,
       currentIndex,
       nextIndex,
       minutesToNext,
-      stations: routes.map((r, idx) => ({
-        stationName: r.station.name,
-        stationCode: r.station.code,
-        arrivalTime: r.arrivalTime,
-        departureTime: r.departureTime,
-        distanceKm: r.distanceFromOrigin,
-        platform: r.platform,
-        isHalted: idx === currentIndex,
-        isPassed: idx < currentIndex,
-        isUpcoming: idx > currentIndex
-      }))
+      stations: finalStations
     });
 
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch live status' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch live status', message: error.message });
   }
 });
 

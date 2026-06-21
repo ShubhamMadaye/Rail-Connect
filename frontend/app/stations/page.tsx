@@ -39,6 +39,26 @@ function getTimeDifferenceMins(timeA: string, timeB: string): number {
   return (hB * 60 + mB) - (hA * 60 + mA);
 }
 
+function formatTo12Hr(timeStr: string | null | undefined): string {
+  if (!timeStr || timeStr === '—') return '—';
+  if (timeStr.toLowerCase().includes('am') || timeStr.toLowerCase().includes('pm')) {
+    return timeStr;
+  }
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return timeStr;
+  
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return timeStr;
+  
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  
+  const hoursStr = hours.toString().padStart(2, '0');
+  return `${hoursStr}:${minutes} ${ampm}`;
+}
+
 export default function StationsPage() {
   const [stations, setStations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -279,7 +299,7 @@ export default function StationsPage() {
                       <Clock className="w-3.5 h-3.5 text-indigo-400" />
                       <span className="text-xs font-bold text-slate-300">Station Clock:</span>
                       <span className="font-mono text-sm font-extrabold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                        {simulatedTime}
+                        {formatTo12Hr(simulatedTime)}
                       </span>
                     </div>
 
@@ -342,7 +362,7 @@ export default function StationsPage() {
                               <div className="flex items-center justify-between md:justify-end gap-6">
                                 <div className="text-right">
                                   <span className="text-slate-500 font-bold uppercase text-[9px] tracking-wider block">Scheduled</span>
-                                  <span className="text-slate-300 font-bold font-mono">{route.scheduledTime}</span>
+                                  <span className="text-slate-300 font-bold font-mono">{formatTo12Hr(route.scheduledTime)}</span>
                                 </div>
 
                                 {route.delayMinutes > 0 ? (
@@ -359,7 +379,7 @@ export default function StationsPage() {
 
                                 <div className="text-right border-l border-slate-800/40 pl-4">
                                   <span className="text-slate-500 font-bold uppercase text-[9px] tracking-wider block">Expected</span>
-                                  <span className="text-white font-extrabold font-mono text-sm">{route.actualTime}</span>
+                                  <span className="text-white font-extrabold font-mono text-sm">{formatTo12Hr(route.actualTime)}</span>
                                 </div>
 
                                 <div className="md:w-36 text-left md:text-right border-l border-slate-800/40 pl-4">
@@ -412,12 +432,12 @@ export default function StationsPage() {
                                           <div className="text-right flex items-center gap-6">
                                             <div>
                                               <span className="text-slate-500 font-bold uppercase text-[9px]">Sched Arrival</span>
-                                              <div className="text-slate-400 font-bold font-mono mt-0.5">{dest.arrivalTime}</div>
+                                              <div className="text-slate-400 font-bold font-mono mt-0.5">{formatTo12Hr(dest.arrivalTime)}</div>
                                             </div>
                                             <div>
                                               <span className="text-slate-500 font-bold uppercase text-[9px]">Est Arrival</span>
                                               <div className="text-indigo-400 font-bold font-mono mt-0.5">
-                                                {estArr} 
+                                                {formatTo12Hr(estArr)} 
                                                 {route.delayMinutes > 0 && <span className="text-[9px] text-amber-500 ml-1">(+{route.delayMinutes}m)</span>}
                                               </div>
                                             </div>
@@ -483,9 +503,9 @@ export default function StationsPage() {
                                 </span>
                                 <span>·</span>
                                 <Clock className="w-3 h-3 text-slate-500" />
-                                <span>Sched Arr: {dest.arrivalTime}</span>
+                                <span>Sched Arr: {formatTo12Hr(dest.arrivalTime)}</span>
                                 {dest.delayMinutes > 0 && (
-                                  <span className="text-amber-500 font-bold">(Est: {estArrival})</span>
+                                  <span className="text-amber-500 font-bold">(Est: {formatTo12Hr(estArrival)})</span>
                                 )}
                               </div>
                             </div>

@@ -103,6 +103,26 @@ function BookingForm() {
     </div>
   );
 
+  const formatTo12Hr = (timeStr: string | null | undefined): string => {
+    if (!timeStr || timeStr === '—') return '—';
+    if (timeStr.toLowerCase().includes('am') || timeStr.toLowerCase().includes('pm')) {
+      return timeStr;
+    }
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    
+    let hours = parseInt(parts[0], 10);
+    const minutes = parts[1];
+    if (isNaN(hours)) return timeStr;
+    
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    
+    const hoursStr = hours.toString().padStart(2, '0');
+    return `${hoursStr}:${minutes} ${ampm}`;
+  };
+
   return (
     <div className="min-h-screen max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Train summary */}
@@ -125,7 +145,7 @@ function BookingForm() {
 
         <div className="flex items-center gap-6 mt-4">
           <div>
-            <div className="text-xl font-bold text-white">{fromRoute?.departureTime || '—'}</div>
+            <div className="text-xl font-bold text-white">{formatTo12Hr(fromRoute?.departureTime)}</div>
             <div className="text-xs text-slate-400 flex items-center gap-1">
               <MapPin className="w-3 h-3" /> {fromStation}
             </div>
@@ -134,7 +154,7 @@ function BookingForm() {
           <ArrowRight className="w-4 h-4 text-slate-600 flex-shrink-0" />
           <div className="flex-1 h-px bg-slate-700" />
           <div className="text-right">
-            <div className="text-xl font-bold text-white">{toRoute?.arrivalTime || '—'}</div>
+            <div className="text-xl font-bold text-white">{formatTo12Hr(toRoute?.arrivalTime)}</div>
             <div className="text-xs text-slate-400 flex items-center gap-1 justify-end">
               <MapPin className="w-3 h-3" /> {toStation}
             </div>
