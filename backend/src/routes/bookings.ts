@@ -138,15 +138,16 @@ router.post('/', authenticate, async (req: AuthRequest, res: Response) => {
 
     res.status(201).json({ booking, perPassengerFare });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Booking creation error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while creating booking' });
   }
 });
 
-// GET /api/bookings/pnr/:pnr — Get by PNR (public)
-router.get('/pnr/:pnr', async (req: any, res: Response) => {
+// GET /api/bookings/pnr/:pnr — Get by PNR (requires ownership or admin check)
+router.get('/pnr/:pnr', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const booking = await prisma.booking.findUnique({
-      where: { pnr: req.params.pnr },
+      where: { pnr: req.params.pnr as string },
       include: {
         passengers: true,
         train: true,
@@ -155,6 +156,11 @@ router.get('/pnr/:pnr', async (req: any, res: Response) => {
     });
     if (!booking) return res.status(404).json({ error: 'Booking not found for PNR: ' + req.params.pnr });
 
+    // Validate resource ownership
+    if (booking.userId !== req.user!.id && req.user!.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     const today = new Date().toISOString().split('T')[0];
     const delay = await prisma.delay.findUnique({
       where: { trainId_date: { trainId: booking.trainId, date: booking.journeyDate } },
@@ -162,7 +168,8 @@ router.get('/pnr/:pnr', async (req: any, res: Response) => {
 
     res.json({ booking: { ...booking, delay } });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('PNR lookup error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while retrieving ticket' });
   }
 });
 
@@ -176,7 +183,8 @@ router.get('/my', authenticate, async (req: AuthRequest, res: Response) => {
     });
     res.json({ bookings });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Get user bookings error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while fetching bookings' });
   }
 });
 
@@ -197,7 +205,8 @@ router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
     }
     res.json({ booking });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Get booking details error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while retrieving booking details' });
   }
 });
 
@@ -217,17 +226,23 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res: Response) => {
     });
     res.json({ booking: updated, message: 'Booking cancelled successfully. Refund will be processed in 5-7 business days.' });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Cancel booking error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while cancelling booking' });
   }
 });
 
-// GET /api/bookings/pnr/:pnr/waitlist-prediction — Get waitlist probability
-router.get('/pnr/:pnr/waitlist-prediction', async (req: any, res: Response) => {
+// GET /api/bookings/pnr/:pnr/waitlist-prediction — Get waitlist probability (requires ownership or admin check)
+router.get('/pnr/:pnr/waitlist-prediction', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const booking = await prisma.booking.findUnique({
-      where: { pnr: req.params.pnr }
+      where: { pnr: req.params.pnr as string }
     });
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+    // Validate resource ownership
+    if (booking.userId !== req.user!.id && req.user!.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
 
     if (booking.status !== 'WaitingList') {
       return res.json({ waitlisted: false, probability: 100, message: 'Ticket is confirmed' });
@@ -269,15 +284,16 @@ router.get('/pnr/:pnr/waitlist-prediction', async (req: any, res: Response) => {
       message
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Waitlist prediction error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred during prediction' });
   }
 });
 
-// GET /api/bookings/pnr/:pnr/validate — Validate PNR ticket
-router.get('/pnr/:pnr/validate', async (req: any, res: Response) => {
+// GET /api/bookings/pnr/:pnr/validate — Validate PNR ticket (requires ownership or admin check)
+router.get('/pnr/:pnr/validate', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const booking = await prisma.booking.findUnique({
-      where: { pnr: req.params.pnr },
+      where: { pnr: req.params.pnr as string },
       include: {
         passengers: true,
         train: true
@@ -286,6 +302,11 @@ router.get('/pnr/:pnr/validate', async (req: any, res: Response) => {
 
     if (!booking) {
       return res.json({ valid: false, message: 'Invalid ticket PNR code' });
+    }
+
+    // Validate resource ownership
+    if (booking.userId !== req.user!.id && req.user!.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
     res.json({
@@ -304,7 +325,8 @@ router.get('/pnr/:pnr/validate', async (req: any, res: Response) => {
       message: booking.status === 'Cancelled' ? 'Ticket is Cancelled' : 'Ticket is Active and Valid'
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('Validate PNR error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while validating ticket' });
   }
 });
 
@@ -323,7 +345,8 @@ router.get('/system/config', (req, res) => {
     }
     res.json({ localIp });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('System config error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred while loading system config' });
   }
 });
 

@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import { rateLimit } from 'express-rate-limit';
+import { runBackup } from './utils/backup';
 import authRoutes from './routes/auth';
 import trainRoutes from './routes/trains';
 import bookingRoutes from './routes/bookings';
@@ -16,12 +18,31 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(helmet());
+
+// HTTPS redirection in production
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
+// General API rate limiting
+const apiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100,
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api', apiRateLimiter);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -45,12 +66,18 @@ app.use((req, res) => {
 // Error handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error', message: err.message });
+  res.status(500).json({ error: 'Internal server error', message: 'Something went wrong on the server' });
 });
 
 app.listen(PORT, () => {
   console.log(`Railway API running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
+
+  // Start daily backups scheduler (every 24 hours)
+  setInterval(() => {
+    console.log('[SCHEDULER] Triggering scheduled database backup...');
+    runBackup();
+  }, 24 * 60 * 60 * 1000);
 });
 
 export default app;

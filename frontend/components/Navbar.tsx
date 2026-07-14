@@ -9,6 +9,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/trains/search', label: 'Search Trains' },
   { href: '/timetable', label: 'Live Timetable' },
+  { href: '/food', label: 'Order Food' },
   { href: '/stations', label: 'Stations Directory' },
 ];
 
@@ -73,13 +74,11 @@ export default function Navbar() {
       className="sticky top-0 z-50 transition-all duration-300"
       style={{
         background: scrolled
-          ? 'rgba(8, 13, 36, 0.92)'
-          : 'rgba(3, 6, 26, 0.7)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderBottom: scrolled
-          ? '1px solid rgba(99,102,241,0.18)'
-          : '1px solid rgba(99,102,241,0.08)',
+          ? 'rgba(11, 16, 32, 0.92)'
+          : 'rgba(11, 16, 32, 0.7)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow: scrolled ? '0 4px 40px rgba(0,0,0,0.4)' : 'none',
       }}
     >

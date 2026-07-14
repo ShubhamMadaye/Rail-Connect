@@ -20,8 +20,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${plusJakarta.variable} font-sans bg-[#03061A] text-white antialiased`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${plusJakarta.variable} font-sans bg-[#03061A] text-white antialiased`} suppressHydrationWarning>
         <AuthProvider>
           <Navbar />
           <main className="min-h-screen relative z-10">{children}</main>

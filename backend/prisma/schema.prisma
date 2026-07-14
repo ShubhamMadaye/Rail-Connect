@@ -10,14 +10,22 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  phone     String?
-  password  String
-  role      String   @default("user") // user | admin
-  createdAt DateTime @default(now())
-  bookings  Booking[]
+  id                   String         @id @default(uuid())
+  name                 String
+  email                String         @unique
+  phone                String?
+  password             String
+  role                 String         @default("user") // user | admin
+  failedLoginAttempts  Int            @default(0)
+  lockoutUntil         DateTime?
+  isEmailVerified      Boolean        @default(false)
+  verificationToken    String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  createdAt            DateTime       @default(now())
+  bookings             Booking[]
+  refreshTokens        RefreshToken[]
+  auditLogs            AuditLog[]
 }
 
 model Station {
@@ -146,4 +154,23 @@ model FoodOrder {
   updatedAt   DateTime @default(now()) @updatedAt
   booking     Booking  @relation(fields: [bookingId], references: [id])
   vendor      FoodVendor @relation(fields: [vendorId], references: [id])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String   // "LOGIN_SUCCESS", "LOGIN_FAILED", "REGISTER", "EMAIL_VERIFIED", "PASSWORD_RESET_REQUEST", "PASSWORD_RESET_SUCCESS", "LOGOUT", "ADMIN_ACTION"
+  details   String
+  ip        String?
+  createdAt DateTime @default(now())
 }

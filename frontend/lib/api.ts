@@ -11,19 +11,92 @@ const getApiBase = () => {
   return 'http://localhost:4000/api';
 };
 
+let memoryToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  memoryToken = token;
+};
+
 const api = axios.create({
   baseURL: getApiBase(),
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
-// Attach JWT to every request
 api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (memoryToken) {
+    config.headers.Authorization = `Bearer ${memoryToken}`;
   }
   return config;
 });
+
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Do not retry refresh calls if they fail
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const response = await axios.post(
+          `${getApiBase()}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        const { accessToken } = response.data;
+
+        setAccessToken(accessToken);
+        isRefreshing = false;
+        processQueue(null, accessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        processQueue(refreshError, null);
+        setAccessToken(null);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('auth:logout'));
+        }
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default api;
 
@@ -33,6 +106,11 @@ export const authAPI = {
     api.post('/auth/register', data),
   login: (data: { email: string; password: string }) => api.post('/auth/login', data),
   me: () => api.get('/auth/me'),
+  refresh: () => api.post('/auth/refresh'),
+  logout: () => api.post('/auth/logout'),
+  verifyEmail: (token: string) => api.get('/auth/verify-email', { params: { token } }),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (data: any) => api.post('/auth/reset-password', data),
 };
 
 // ────── Trains ──────
@@ -86,6 +164,8 @@ export const adminAPI = {
   clearDelay: (trainId: string, date: string) => api.delete(`/admin/delays/${trainId}/${date}`),
   toggleTrain: (id: string, isActive: boolean) => api.patch(`/admin/trains/${id}`, { isActive }),
   getRevenueAnalytics: () => api.get('/admin/revenue-analytics'),
+  getAuditLogs: () => api.get('/admin/audit-logs'),
+  triggerBackup: () => api.post('/admin/backup'),
 };
 
 // ────── Assistant ──────

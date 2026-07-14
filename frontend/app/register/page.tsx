@@ -27,12 +27,29 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirm) return toast.error('Passwords do not match');
-    if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
+    
+    // Strong password checks
+    if (form.password.length < 8) {
+      return toast.error('Password must be at least 8 characters long');
+    }
+    if (!/[A-Z]/.test(form.password)) {
+      return toast.error('Password must contain at least one uppercase letter');
+    }
+    if (!/[a-z]/.test(form.password)) {
+      return toast.error('Password must contain at least one lowercase letter');
+    }
+    if (!/[0-9]/.test(form.password)) {
+      return toast.error('Password must contain at least one number');
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
+      return toast.error('Password must contain at least one special character');
+    }
+
     setLoading(true);
     try {
-      const newUser = await register(form.name, form.email, form.password, form.phone);
-      toast.success('Account created! Welcome aboard');
-      router.push(newUser.role === 'admin' ? '/admin' : '/dashboard');
+      await register(form.name, form.email, form.password, form.phone);
+      toast.success('Account created! Please check backend/mock-emails.log to verify your email address.', { duration: 6000 });
+      router.push('/login');
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Registration failed');
     } finally {

@@ -1,6 +1,8 @@
 import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth';
+import { logEvent } from '../utils/audit';
+import { runBackup } from '../utils/backup';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -228,6 +230,32 @@ router.get('/delays', async (req: AuthRequest, res: Response) => {
       orderBy: { delayMinutes: 'desc' },
     });
     res.json({ delays, date: today });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/audit-logs — Retrieve security audit logs
+router.get('/audit-logs', async (req: AuthRequest, res: Response) => {
+  try {
+    const logs = await prisma.auditLog.findMany({
+      include: { user: { select: { id: true, name: true, email: true, role: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 100 // Limit to latest 100 logs
+    });
+    res.json({ logs });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/backup — Manually trigger DB backup
+router.post('/backup', async (req: AuthRequest, res: Response) => {
+  const ip = req.ip || req.socket.remoteAddress || '';
+  try {
+    await runBackup();
+    await logEvent(req.user?.id, 'ADMIN_ACTION', 'Triggered database backup manually', ip);
+    res.json({ message: 'Database backup completed successfully' });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

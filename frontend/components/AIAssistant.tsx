@@ -35,6 +35,12 @@ export default function AIAssistant() {
     }
   }, [messages, isOpen]);
 
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('ai-assistant:open', handleOpen);
+    return () => window.removeEventListener('ai-assistant:open', handleOpen);
+  }, []);
+
   const handleSend = async (textToSend: string) => {
     if (!textToSend.trim() || loading) return;
 

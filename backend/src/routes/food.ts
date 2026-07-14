@@ -96,6 +96,11 @@ router.get('/order/:id', authenticate, async (req: AuthRequest, res: Response) =
     });
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
+    // Validate resource ownership
+    if (order.booking.userId !== req.user!.id && req.user!.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     // Simulate status progression
     const createdAt = new Date(order.createdAt);
     const now = new Date();
@@ -119,6 +124,14 @@ router.get('/order/:id', authenticate, async (req: AuthRequest, res: Response) =
 // GET /api/food/orders/booking/:bookingId — Orders for a booking
 router.get('/orders/booking/:bookingId', authenticate, async (req: AuthRequest, res: Response) => {
   try {
+    const booking = await prisma.booking.findUnique({ where: { id: req.params.bookingId as string } });
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+    // Validate resource ownership
+    if (booking.userId !== req.user!.id && req.user!.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     const orders = await prisma.foodOrder.findMany({
       where: { bookingId: req.params.bookingId as string },
       include: { vendor: true },

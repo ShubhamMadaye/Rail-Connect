@@ -10,7 +10,7 @@ const platform = [
 ];
 
 const services = [
-  { label: 'In-Train Food Delivery', href: '#' },
+  { label: 'In-Train Food Delivery', href: '/food' },
   { label: 'Retiring Rooms', href: '#' },
   { label: 'Mumbai Local Pass', href: '#' },
   { label: 'Corporate Travel', href: '#' },
@@ -21,6 +21,26 @@ export default function Footer() {
     <footer className="relative pt-20 pb-8 overflow-hidden" style={{ background: '#03061A', borderTop: '1px solid rgba(99,102,241,0.1)' }}>
       {/* Top gradient divider */}
       <div className="gradient-divider absolute top-0 left-0 right-0" />
+
+      {/* Crossing train rail track detail */}
+      <div className="absolute top-[1px] left-0 right-0 h-2 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 track-dots opacity-20" />
+        <div className="absolute top-0.5 h-1.5 flex items-center animate-crossing-train">
+          <div className="flex items-center gap-0.5">
+            {/* Train Engine */}
+            <div className="w-3.5 h-1 bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-r-sm" />
+            <div className="w-0.5 h-[2px] bg-slate-500" />
+            {/* Coach 1 */}
+            <div className="w-3 h-1 bg-indigo-600 rounded-xs" />
+            <div className="w-0.5 h-[2px] bg-slate-500" />
+            {/* Coach 2 */}
+            <div className="w-3 h-1 bg-indigo-600 rounded-xs" />
+            <div className="w-0.5 h-[2px] bg-slate-500" />
+            {/* Coach 3 */}
+            <div className="w-3 h-1 bg-indigo-600 rounded-xs" />
+          </div>
+        </div>
+      </div>
 
       {/* Ambient glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none"
