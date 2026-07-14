@@ -27,17 +27,15 @@ export default function FoodCartTray() {
   };
 
   const updateQty = (id: string, delta: number) => {
-    setQuantities(prev => {
-      const currentQty = prev[id] || 0;
-      const nextQty = Math.max(0, currentQty + delta);
-      if (delta > 0) {
-        const item = [...foodItems.meals, ...foodItems.drinks].find(i => i.id === id);
-        if (item) {
-          toast.success(`${item.name} added!`, { id: 'food-tray' });
-        }
+    const currentQty = quantities[id] || 0;
+    const nextQty = Math.max(0, currentQty + delta);
+    if (delta > 0) {
+      const item = [...foodItems.meals, ...foodItems.drinks].find(i => i.id === id);
+      if (item) {
+        toast.success(`${item.name} added!`, { id: 'food-tray' });
       }
-      return { ...prev, [id]: nextQty };
-    });
+    }
+    setQuantities(prev => ({ ...prev, [id]: nextQty }));
   };
 
   const totalItems = Object.values(quantities).reduce((a, b) => a + b, 0);
