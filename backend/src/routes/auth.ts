@@ -181,11 +181,7 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(401).json({ error: errorMsg });
     }
 
-    // Check if email is verified
-    if (!user.isEmailVerified) {
-      await logEvent(user.id, 'LOGIN_FAILED', `Attempted login on unverified account.`, ip);
-      return res.status(403).json({ error: 'Please verify your email address before logging in. Check backend/mock-emails.log for link.' });
-    }
+
 
     // Clear failed login attempts and lockout
     const updatedUser = await prisma.user.update({
